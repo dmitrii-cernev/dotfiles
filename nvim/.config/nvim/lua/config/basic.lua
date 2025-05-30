@@ -51,3 +51,5 @@ vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineChanged", "CmdlineLeave" }
 
 -- optional: disable built-in showcmd (you get partial keys in the statusline already)
 vim.o.showcmd = false
+
+vim.opt.wrap = false
