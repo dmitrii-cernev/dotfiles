@@ -158,6 +158,8 @@ alias kafdrop-prod="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA
 alias kafdrop-test="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=sesth02-kafka10.piercenetwork.com:9092,sesth02-kafka11.piercenetwork.com:9092,sesth02-kafka12.piercenetwork.com:9092 obsidiandynamics/kafdrop:latest"
 alias kafdrop-local="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=localhost:9092 obsidiandynamics/kafdrop:latest"
 
+alias battery='pmset -g batt | grep -o "[0-9]\{1,3\}%\|\d\+:\d\+"'
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
@@ -184,3 +186,5 @@ if [ -f '/Users/dmitriicernev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/d
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc'; fi
 eval "$(zoxide init zsh)"
+source <(fzf --zsh)
+

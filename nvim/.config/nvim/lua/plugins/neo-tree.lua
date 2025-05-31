@@ -15,6 +15,6 @@ return {
                 -- otherwise open (or focus) the filesystem tree and reveal the current file
                 vim.cmd("Neotree source=filesystem reveal=true position=left")
             end
-        end, { silent = true, noremap = true })
+        end, { silent = true, noremap = true, desc = "Toggle File Explorer" })
     end,
 }

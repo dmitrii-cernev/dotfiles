@@ -38,13 +38,13 @@ return {
                     -- Show signature help
                     vim.keymap.set('n', 'gK', vim.lsp.buf.signature_help, opts)
                     -- Rename symbol
-                    vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, opts)
+                    vim.keymap.set('n', '<leader>cr', vim.lsp.buf.rename, opts, { desc = "LSP Rename" })
                     -- Show code actions
-                    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+                    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts, { desc = "LSP Code Action" })
                     -- Format buffer
-                    vim.keymap.set('n', '<space>cf', function()
+                    vim.keymap.set('n', '<leader>cf', function()
                         vim.lsp.buf.format({ async = true })
-                    end, opts)
+                    end, opts, { desc = "LSP Format Buffer" })
                     -- Show diagnostics
                     vim.keymap.set('n', 'gl', vim.diagnostic.open_float, opts)
                     -- Navigate diagnostics
