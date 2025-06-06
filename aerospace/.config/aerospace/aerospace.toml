@@ -240,6 +240,10 @@ if.app-id = 'com.apple.Safari'
     run = "move-node-to-workspace B"
 
 [[on-window-detected]]
+if.app-id = 'app.zen-browser.zen'
+    run = "move-node-to-workspace B"
+
+[[on-window-detected]]
 if.app-id = 'md.obsidian'
     run = "move-node-to-workspace O"
 
