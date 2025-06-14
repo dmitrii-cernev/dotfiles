@@ -178,20 +178,20 @@ install_basic_packages() {
     
     case $PACKAGE_MANAGER in
         brew)
-            brew install curl wget git zsh tmux vim neovim
+            brew install curl wget git zsh tmux vim neovim stow
             ;;
         apt)
-            apt install -y curl wget git zsh tmux vim neovim build-essential unzip
+            apt install -y curl wget git zsh tmux vim neovim build-essential unzip stow
             ;;
         dnf)
-            dnf install -y curl wget git zsh tmux vim neovim gcc gcc-c++ make unzip
+            dnf install -y curl wget git zsh tmux vim neovim gcc gcc-c++ make unzip stow
             # Install EPEL for additional packages on RHEL-based systems
             if [[ "$OS" == "centos" || "$OS" == "rhel" || "$OS" == "rocky" || "$OS" == "almalinux" ]]; then
                 dnf install -y epel-release
             fi
             ;;
         yum)
-            yum install -y curl wget git zsh tmux vim neovim gcc gcc-c++ make unzip
+            yum install -y curl wget git zsh tmux vim neovim gcc gcc-c++ make unzip stow
             # Install EPEL for additional packages
             yum install -y epel-release
             ;;
@@ -379,9 +379,9 @@ install_tmux_plugin_manager() {
     log_info "You can now install tmux plugins by running 'tmux' and then pressing prefix + I (capital I)."
 }
 
-# Install vim-plug for Vim and Neovim
+# Install vim-plug for Vim 
 install_vim_plugin_manager() {
-    log_info "Installing vim-plug for Vim and Neovim..."
+    log_info "Installing vim-plug for Vim"
 
     # For Vim
     local VIM_PLUG_DIR="$ACTUAL_HOME/.vim/autoload/plug.vim"
@@ -390,15 +390,6 @@ install_vim_plugin_manager() {
         log_success "vim-plug installed for Vim"
     else
         log_warning "vim-plug already installed for Vim"
-    fi
-
-    # For Neovim
-    local NVIM_PLUG_DIR="$ACTUAL_HOME/.local/share/nvim/site/autoload/plug.vim"
-    if [[ ! -f "$NVIM_PLUG_DIR" ]]; then
-        run_as_user "curl -fLo $NVIM_PLUG_DIR --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-        log_success "vim-plug installed for Neovim"
-    else
-        log_warning "vim-plug already installed for Neovim"
     fi
 }
 
