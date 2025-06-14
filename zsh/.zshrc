@@ -69,9 +69,6 @@ unset __conda_setup
 # SHELL ENHANCEMENTS
 # ==============================================================================
 
-# Zsh syntax highlighting
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
 # Direnv
 eval "$(direnv hook zsh)"
 
