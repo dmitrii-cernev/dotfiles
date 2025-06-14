@@ -38,6 +38,9 @@ vim.opt.backspace = { 'indent', 'eol', 'start' }
 -- hide command-line when unused
 vim.o.cmdheight = 0
 
+vim.opt.undofile = true
+vim.opt.undodir = vim.fn.expand("~/.config/nvim/undodir")
+
 -- make cmdheight 1 when you enter : or /
 vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineChanged", "CmdlineLeave" }, {
   callback = function(event)

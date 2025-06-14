@@ -183,8 +183,41 @@ set -o vi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 eval $(thefuck --alias)
+
+
 # Should be in the end of file
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/catppuccin.json)"
 fi
 
+# redraw the prompt via zle
+_omp_redraw_prompt() {
+  local precmd
+  for precmd in $precmd_functions; do
+    $precmd
+  done
+  zle .reset-prompt
+}
+
+# catch vi-mode switches and set POSH_VI_MODE accordingly
+function _omp_zle-keymap-select() {
+  if [[ $KEYMAP == vicmd ]]; then
+    export POSH_VI_MODE=command
+  else
+    export POSH_VI_MODE=insert
+  fi
+  _omp_redraw_prompt
+}
+_omp_create_widget zle-keymap-select _omp_zle-keymap-select
+
+# when a line finishes, always go back to insert mode
+function _omp_zle-line-finish() {
+  export POSH_VI_MODE=insert
+}
+_omp_create_widget zle-line-finish _omp_zle-line-finish
+
+# reset to insert on Ctrl-C
+TRAPINT() {
+  export POSH_VI_MODE=insert
+  return $((128 + $1))
+}
