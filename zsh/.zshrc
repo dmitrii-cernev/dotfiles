@@ -17,32 +17,28 @@ source $ZSH/oh-my-zsh.sh
 # PATH CONFIGURATION
 # ==============================================================================
 
-# Homebrew (M1 Mac)
-export PATH=/opt/homebrew/bin:$PATH
-
-# Flutter
-export PATH="$PATH:/Users/dmitriicernev/flutter/bin"
-
-# Pipx
-export PATH="$PATH:/Users/dmitriicernev/.local/bin"
-
-# PostgreSQL
-export PATH="/usr/local/opt/libpq/bin:$PATH"
-
-# IntelliJ IDEA
-export PATH="/Applications/IntelliJ IDEA.app/Contents/MacOS:$PATH"
+# Local bin directory
+export PATH="$HOME/.local/bin:$PATH"
 
 # ==============================================================================
 # ENVIRONMENT VARIABLES
 # ==============================================================================
 
-# Java
-export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.11)
-
-# Go
-export GOROOT=$(brew --prefix go)/libexec
-export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
+# Java (if available)
+if command -v java >/dev/null 2>&1; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        export JAVA_HOME=$(/usr/libexec/java_home 2>/dev/null)
+    else
+        # Linux - common paths
+        for java_dir in /usr/lib/jvm/default-java /usr/lib/jvm/java-*-openjdk*; do
+            if [ -d "$java_dir" ]; then
+                export JAVA_HOME="$java_dir"
+                break
+            fi
+        done
+    fi
+fi
 
 # Node Version Manager
 export NVM_DIR="$HOME/.nvm"
@@ -50,133 +46,127 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # ==============================================================================
-# CONDA CONFIGURATION
-# ==============================================================================
-
-__conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/homebrew/anaconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-
-# ==============================================================================
 # SHELL ENHANCEMENTS
 # ==============================================================================
 
-# Direnv
-eval "$(direnv hook zsh)"
+# Direnv (if available)
+if command -v direnv >/dev/null 2>&1; then
+    eval "$(direnv hook zsh)"
+fi
 
-# Zoxide (better cd)
-eval "$(zoxide init zsh)"
+# Zoxide (better cd) - if available
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+fi
 
-# FZF
-source <(fzf --zsh)
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# FZF (if available)
+if command -v fzf >/dev/null 2>&1; then
+    source <(fzf --zsh) 2>/dev/null || true
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+fi
 
-# TheFuck
-eval $(thefuck --alias)
+# TheFuck (if available)
+if command -v thefuck >/dev/null 2>&1; then
+    eval $(thefuck --alias)
+fi
 
 # Vi mode
 set -o vi
 
-# Kubectl completion
-[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+# Kubectl completion (if available)
+if command -v kubectl >/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+fi
 
 # ==============================================================================
 # ALIASES
 # ==============================================================================
 
-# Homebrew aliases (x86 vs ARM)
-alias x86brew="arch -x86_64 /usr/local/bin/brew"
-alias brew="/opt/homebrew/bin/brew"
-
-# Kafdrop aliases
-alias kafdrop-prod="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=sesth01-kafka20.piercenetwork.com:9092,sesth01-kafka21.piercenetwork.com:9092,sesth01-kafka22.piercenetwork.com:9092 obsidiandynamics/kafdrop:latest"
-alias kafdrop-test="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=sesth02-kafka10.piercenetwork.com:9092,sesth02-kafka11.piercenetwork.com:9092,sesth02-kafka12.piercenetwork.com:9092 obsidiandynamics/kafdrop:latest"
-alias kafdrop-local="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=localhost:9092 obsidiandynamics/kafdrop:latest"
-
-# Battery status
-alias battery='pmset -g batt | grep -o "[0-9]\{1,3\}%\|\d\+:\d\+"'
+# Battery status (macOS only)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias battery='pmset -g batt | grep -o "[0-9]\{1,3\}%\|\d\+:\d\+"'
+fi
 
 # ==============================================================================
 # FUNCTIONS
 # ==============================================================================
 
-# Format files with Biome
+# Format files with Biome (if available)
 format() {
     if [ -z "$1" ]; then
         echo "Usage: format <file>"
-    else
-        npx @biomejs/biome format --write "$1"
+        return 1
     fi
-}
-
-# Start ecommerce project
-start_ecom() {
-    cd /Users/dmitriicernev/IdeaProjects/ecom-sync-engine || return
-    direnv allow
-    nohup idea . >/dev/null 2>&1 &
+    
+    if command -v npx >/dev/null 2>&1; then
+        npx @biomejs/biome format --write "$1"
+    else
+        echo "npx not available. Please install Node.js and npm."
+        return 1
+    fi
 }
 
 # ==============================================================================
 # EXTERNAL INTEGRATIONS
 # ==============================================================================
 
-# Fabric bootstrap
-if [ -f "/Users/dmitriicernev/.config/fabric/fabric-bootstrap.inc" ]; then 
-    . "/Users/dmitriicernev/.config/fabric/fabric-bootstrap.inc"
+# Google Cloud SDK (if available)
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
+    . "$HOME/google-cloud-sdk/path.zsh.inc"
 fi
 
-# Google Cloud SDK
-if [ -f '/Users/dmitriicernev/google-cloud-sdk/path.zsh.inc' ]; then 
-    . '/Users/dmitriicernev/google-cloud-sdk/path.zsh.inc'
-fi
-
-if [ -f '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc' ]; then 
-    . '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc'
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
+    . "$HOME/google-cloud-sdk/completion.zsh.inc"
 fi
 
 # ==============================================================================
 # PROMPT CONFIGURATION (OH-MY-POSH)
 # ==============================================================================
 
-# Initialize Oh My Posh (skip for Apple Terminal)
-if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-    eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/catppuccin.json)"
-fi
-
-# Oh My Posh Vi mode integration
-_omp_redraw_prompt() {
-    local precmd
-    for precmd in $precmd_functions; do
-        $precmd
-    done
-    zle .reset-prompt
-}
-
-function _omp_zle-keymap-select() {
-    if [[ $KEYMAP == vicmd ]]; then
-        export POSH_VI_MODE=command
-    else
-        export POSH_VI_MODE=insert
+# Initialize Oh My Posh (skip for Apple Terminal, if available)
+if command -v oh-my-posh >/dev/null 2>&1; then
+    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+        if [ -f "$HOME/.config/ohmyposh/catppuccin.json" ]; then
+            eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/catppuccin.json)"
+        else
+            eval "$(oh-my-posh init zsh)"
+        fi
     fi
-    _omp_redraw_prompt
-}
-_omp_create_widget zle-keymap-select _omp_zle-keymap-select
 
-function _omp_zle-line-finish() {
-    export POSH_VI_MODE=insert
-}
-_omp_create_widget zle-line-finish _omp_zle-line-finish
+    # Oh My Posh Vi mode integration
+    _omp_redraw_prompt() {
+        local precmd
+        for precmd in $precmd_functions; do
+            $precmd
+        done
+        zle .reset-prompt
+    }
 
-# Reset to insert mode on Ctrl-C
-TRAPINT() {
-    export POSH_VI_MODE=insert
-    return $((128 + $1))
-}
+    function _omp_zle-keymap-select() {
+        if [[ $KEYMAP == vicmd ]]; then
+            export POSH_VI_MODE=command
+        else
+            export POSH_VI_MODE=insert
+        fi
+        _omp_redraw_prompt
+    }
+    
+    # Create widget only if oh-my-posh is available
+    if typeset -f _omp_create_widget >/dev/null 2>&1; then
+        _omp_create_widget zle-keymap-select _omp_zle-keymap-select
+    fi
+
+    function _omp_zle-line-finish() {
+        export POSH_VI_MODE=insert
+    }
+    
+    if typeset -f _omp_create_widget >/dev/null 2>&1; then
+        _omp_create_widget zle-line-finish _omp_zle-line-finish
+    fi
+
+    # Reset to insert mode on Ctrl-C
+    TRAPINT() {
+        export POSH_VI_MODE=insert
+        return $((128 + $1))
+    }
+fi
