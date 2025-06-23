@@ -6,7 +6,7 @@ return {
     {
         "mason-org/mason-lspconfig.nvim",
         opts = {
-            ensure_installed = { "lua_ls", "pyright", "ruff", "jsonls", "java_language_server", "docker_compose_language_service", "dockerls" },
+            ensure_installed = { "lua_ls", "pyright", "ruff", "jsonls", "docker_compose_language_service", "dockerls", "vue_ls", "prettier" },
             automatic_installation = true,
         },
         dependencies = {
@@ -24,9 +24,10 @@ return {
             vim.lsp.enable('pyright')
             vim.lsp.enable('ruff')
             vim.lsp.enable('jsonls')
-            vim.lsp.enable('java_language_server')
             vim.lsp.enable('docker_compose_language_service')
             vim.lsp.enable('dockerls')
+            vim.lsp.enable('vue_ls')
+            vim.lsp.enable('prettier')
             vim.api.nvim_create_autocmd('LspAttach', {
                 callback = function(args)
                     local bufnr = args.buf

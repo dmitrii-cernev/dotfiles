@@ -36,21 +36,21 @@ vim.opt.backspace = { 'indent', 'eol', 'start' }
 
 -- Autohide command line when not in use
 -- hide command-line when unused
-vim.o.cmdheight = 0
+-- vim.o.cmdheight = 0
 
 vim.opt.undofile = true
 vim.opt.undodir = vim.fn.expand("~/.config/nvim/undodir")
 
 -- make cmdheight 1 when you enter : or /
-vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineChanged", "CmdlineLeave" }, {
-  callback = function(event)
-    if event.event == "CmdlineEnter" then
-      vim.o.cmdheight = 1
-    elseif event.event == "CmdlineLeave" then
-      vim.o.cmdheight = 0
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd({ "CmdlineEnter", "CmdlineChanged", "CmdlineLeave" }, {
+--   callback = function(event)
+--     if event.event == "CmdlineEnter" then
+--       vim.o.cmdheight = 1
+--     elseif event.event == "CmdlineLeave" then
+--       vim.o.cmdheight = 0
+--     end
+--   end,
+-- })
 
 -- optional: disable built-in showcmd (you get partial keys in the statusline already)
 vim.o.showcmd = false

@@ -16,6 +16,9 @@ return {
                     hide_gitignored = false,
                 },
             },
+            window = {
+                width = 40
+            }
         })
 
         vim.keymap.set("n", "<leader>e", function()
