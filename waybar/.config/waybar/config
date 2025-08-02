@@ -1,0 +1,27 @@
+
+{
+  "layer": "top",
+  "position": "top",
+  "height": 28,
+  "spacing": 3,
+  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-right": ["cpu", "memory", "battery", "tray", "clock"],
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "all-outputs": true,
+    "sort-by-number": true,
+    "format-icons": {
+      "default": "○",
+      "focused": "●",
+      "occupied": "◉",
+      "active": "◉"
+    }
+  },
+  "clock": {
+    "format": "{:%a %b %d, %H:%M}"
+  }
+}
+
