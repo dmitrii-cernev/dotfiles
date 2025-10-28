@@ -10,7 +10,9 @@ plugins=(
     zsh-autosuggestions
     zsh-syntax-highlighting
 )
-
+eval "$(brew shellenv)"
+# Add Homebrew's site-functions to fpath
+fpath=($(brew --prefix)/share/zsh/site-functions $fpath)
 source $ZSH/oh-my-zsh.sh
 
 # ==============================================================================
@@ -37,7 +39,7 @@ export PATH="/Applications/IntelliJ IDEA.app/Contents/MacOS:$PATH"
 # ==============================================================================
 
 # Java
-export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.11)
+export JAVA_HOME=$(/usr/libexec/java_home -v 24.0.1)
 
 # Go
 export GOROOT=$(brew --prefix go)/libexec
@@ -48,6 +50,7 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$HOME/.local/bin:$PATH
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 
 # ==============================================================================
 # CONDA CONFIGURATION
@@ -103,6 +106,7 @@ alias kafdrop-local="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFK
 
 # Battery status
 alias battery='pmset -g batt | grep -o "[0-9]\{1,3\}%\|\d\+:\d\+"'
+alias em='emacsclient -c -n -a "emacs"'
 
 # ==============================================================================
 # FUNCTIONS
@@ -180,3 +184,10 @@ TRAPINT() {
     export POSH_VI_MODE=insert
     return $((128 + $1))
 }
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# opencode
+export PATH=/Users/dmitriicernev/.opencode/bin:$PATH

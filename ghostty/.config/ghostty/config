@@ -1,4 +1,4 @@
-theme = catppuccin-macchiato
+theme = Catppuccin Macchiato
 
 background-opacity = 0.84
 background-blur-radius = 55
@@ -10,3 +10,8 @@ window-padding-balance = true
 window-padding-color = extend
 window-padding-x = 0
 window-padding-y = 0
+
+macos-option-as-alt = left
+
+keybind = alt+left=unbind
+keybind = alt+right=unbind

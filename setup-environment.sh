@@ -61,6 +61,14 @@ detect_os() {
     elif [[ -f /etc/os-release ]]; then
         . /etc/os-release
         OS=$ID
+        # Termux also provides /etc/os-release, so check first
+        if [[ "$OS" == "android" && "$IS_TERMUX" == true ]]; then
+          OS="termux"
+          VERSION="$TERMUX_VERSION"
+          PACKAGE_MANAGER="pkg"
+          log_info "Detected Termux (Android) $VERSION"
+          return
+        fi
         VERSION=$VERSION_ID
         
         case $OS in
