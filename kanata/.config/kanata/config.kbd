@@ -1,0 +1,96 @@
+;; kanata.kbd — minimal config per spec
+
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+)
+
+(defsrc
+  esc  grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  tab  q   w  e r t y u i o p [ ] \
+  caps a   s  d f g h j k l ; ' ret
+  lsft z   x  c v b n m , . / rsft
+  lctl lmet lalt       spc        ralt rmet rctl
+)
+
+(defalias
+  cap_ctrl (tap-hold 200 200 esc lctl)                    ;; Caps: tap=Esc, hold=Ctrl
+  tab_nav  (tap-hold 200 200 tab (layer-while-held nav))  ;; Tab: tap=Tab, hold=Nav
+)
+
+;; -------- Input-chord groups --------
+;; Base layer chords: single taps output letters
+(defchords mods_base 150
+  (f) f
+  (d) d
+  (s) s
+  (j) j
+  (k) k
+  (l) l
+
+  (f d) lalt    ;; fd -> Alt
+  (j k) lalt    ;; jk -> Alt
+  (s d) lmet    ;; sd -> Super
+  (k l) lmet    ;; kl -> Super
+  (s f) lctl    ;; sf -> Ctrl
+  (j l) lctl    ;; jl -> Ctrl
+)
+
+;; Nav layer chords: single taps on j/k/l output arrows; s/d/f stay letters
+(defchords mods_nav 200
+  (f) f
+  (d) d
+  (s) s
+  (j) down
+  (k) up
+  (l) rght
+
+  (f d) lalt
+  (j k) lalt
+  (s d) lmet
+  (k l) lmet
+  (s f) lctl
+  (j l) lctl
+)
+
+(defalias
+  ;; chord-entry aliases for base
+  mf  (chord mods_base f)
+  md  (chord mods_base d)
+  ms  (chord mods_base s)
+  mj  (chord mods_base j)
+  mk  (chord mods_base k)
+  ml  (chord mods_base l)
+
+  ;; chord-entry aliases for nav
+  nf  (chord mods_nav f)
+  nd  (chord mods_nav d)
+  ns  (chord mods_nav s)
+  nj  (chord mods_nav j)
+  nk  (chord mods_nav k)
+  nl  (chord mods_nav l)
+)
+
+;; -------- Layers --------
+(deflayer base
+  caps grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  @tab_nav q w e r t y u i o p [ ] \
+  @cap_ctrl a @ms @md @mf g h @mj @mk @ml ; ' ret
+  lsft z x c v b n m , . / rsft
+  lctl lalt lmet            spc           ralt rmet rctl   ;; swap lmet<->lalt
+)
+
+(deflayer nav
+  caps grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  @tab_nav q w e r t y u i o p [ ] \
+  @cap_ctrl a @ns @nd @nf g left @nj @nk @nl ; ' ret       ;; hjkl as arrows
+  lsft z x c v b n m , . / rsft
+  lctl lalt lmet            spc           ralt rmet rctl
+)
+
+;; -------- Remaps outside layers --------
+;; esc becomes CapsLock (physical Esc sends Caps)
+(deflayermap (global)
+  esc caps
+)
+
