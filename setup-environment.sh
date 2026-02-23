@@ -7,7 +7,7 @@
 # Compatible with macOS (Homebrew), Ubuntu/Debian, and RHEL/CentOS/Fedora systems
 # ==============================================================================
 
-set -e  # Exit on any error
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'
@@ -58,18 +58,16 @@ detect_os() {
         else
             log_warning "Homebrew not found. Will install it first."
         fi
+    elif [[ -n "${TERMUX_VERSION:-}" ]]; then
+        OS="termux"
+        VERSION="$TERMUX_VERSION"
+        PACKAGE_MANAGER="pkg"
+        log_info "Detected Termux (Android) $VERSION"
+        return
     elif [[ -f /etc/os-release ]]; then
         . /etc/os-release
         OS=$ID
-        # Termux also provides /etc/os-release, so check first
-        if [[ "$OS" == "android" && "$IS_TERMUX" == true ]]; then
-          OS="termux"
-          VERSION="$TERMUX_VERSION"
-          PACKAGE_MANAGER="pkg"
-          log_info "Detected Termux (Android) $VERSION"
-          return
-        fi
-        VERSION=$VERSION_ID
+        VERSION=${VERSION_ID:-}
         
         case $OS in
             ubuntu|debian)
@@ -117,9 +115,9 @@ get_actual_user() {
         ACTUAL_USER="$USER"
         ACTUAL_HOME="$HOME"
     else
-        if [[ -n "$SUDO_USER" ]]; then
+        if [[ -n "${SUDO_USER:-}" ]]; then
             ACTUAL_USER="$SUDO_USER"
-            ACTUAL_HOME=$(eval echo ~$SUDO_USER)
+            ACTUAL_HOME=$(eval echo ~"$SUDO_USER")
         else
             ACTUAL_USER="$USER"
             ACTUAL_HOME="$HOME"
@@ -227,7 +225,7 @@ install_oh_my_zsh() {
     fi
     
     # Download and install Oh My Zsh non-interactively
-    run_as_user 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+    run_as_user 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
     
     log_success "Oh My Zsh installed"
 }
@@ -338,35 +336,22 @@ install_zoxide() {
     log_success "Zoxide installed"
 }
 
-# Install Node.js and npm
-install_nodejs() {
-    log_info "Installing Node.js and npm..."
-    
-    if command -v node >/dev/null 2>&1; then
-        log_warning "Node.js already installed, skipping..."
+# Install Node Version Manager (nvm)
+install_nvm() {
+    log_info "Installing nvm..."
+
+    if [[ -d "$ACTUAL_HOME/.nvm" ]]; then
+        log_warning "nvm already installed, skipping..."
         return
     fi
-    
-    case $PACKAGE_MANAGER in
-        brew)
-            brew install node
-            ;;
-        apt)
-            # Install Node.js using NodeSource repository
-            curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-            apt-get install -y nodejs
-            ;;
-        dnf)
-            curl -fsSL https://rpm.nodesource.com/setup_lts.x | bash -
-            dnf install -y nodejs npm
-            ;;
-        yum)
-            curl -fsSL https://rpm.nodesource.com/setup_lts.x | bash -
-            yum install -y nodejs npm
-            ;;
-    esac
-    
-    log_success "Node.js and npm installed"
+
+    local NVM_INSTALL_SCRIPT
+    NVM_INSTALL_SCRIPT=$(curl -fsSL https://api.github.com/repos/nvm-sh/nvm/releases/latest \
+        | grep '"tag_name"' | cut -d'"' -f4)
+    run_as_user "curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_INSTALL_SCRIPT}/install.sh | bash"
+
+    log_success "nvm installed"
+    log_info "Run 'nvm install --lts' after restarting your shell to install Node.js"
 }
 
 
@@ -409,7 +394,7 @@ install_additional_tools() {
     case $PACKAGE_MANAGER in
         brew)
             # Install additional tools that are useful for development
-            brew install direnv thefuck bat exa fd ripgrep jq
+            brew install direnv thefuck bat eza fd ripgrep jq
             ;;
         apt)
             apt install -y direnv bat fd-find ripgrep jq
@@ -430,12 +415,68 @@ install_additional_tools() {
     log_success "Additional tools installed"
 }
 
+# Install lazydocker
+install_lazydocker() {
+    log_info "Installing lazydocker..."
+
+    if command -v lazydocker >/dev/null 2>&1; then
+        log_warning "lazydocker already installed, skipping..."
+        return
+    fi
+
+    case $PACKAGE_MANAGER in
+        brew)
+            brew install lazydocker
+            ;;
+        *)
+            run_as_user "curl -fsSL https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash"
+            ;;
+    esac
+
+    log_success "lazydocker installed"
+}
+
+# Install lnav
+install_lnav() {
+    log_info "Installing lnav..."
+
+    if command -v lnav >/dev/null 2>&1; then
+        log_warning "lnav already installed, skipping..."
+        return
+    fi
+
+    case $PACKAGE_MANAGER in
+        brew)
+            brew install lnav
+            ;;
+        apt)
+            if command -v snap >/dev/null 2>&1; then
+                snap install lnav
+            else
+                log_warning "snap not available, skipping lnav install"
+            fi
+            ;;
+        dnf|yum)
+            curl -fsSL https://packagecloud.io/install/repositories/tstack/lnav/script.rpm.sh | bash
+            $PACKAGE_MANAGER install -y lnav
+            ;;
+    esac
+
+    log_success "lnav installed"
+}
+
 # Setup .zshrc file
 setup_zshrc() {
     log_info "Setting up .zshrc file..."
     
     local ZSHRC_FILE="$ACTUAL_HOME/.zshrc"
     
+    # Skip if .zshrc is a symlink (e.g. managed by stow)
+    if [[ -L "$ZSHRC_FILE" ]]; then
+        log_warning ".zshrc is a symlink (likely managed by stow), skipping overwrite"
+        return
+    fi
+
     # Backup existing .zshrc if it exists
     if [[ -f "$ZSHRC_FILE" ]]; then
         run_as_user "cp $ZSHRC_FILE $ZSHRC_FILE.backup.$(date +%Y%m%d_%H%M%S)"
@@ -664,11 +705,10 @@ change_default_shell() {
     ZSH_PATH=$(which zsh)
     
     if [[ "$IS_MACOS" == true ]]; then
-        # On macOS, use dscl to change shell
-        if [[ "$(dscl . -read /Users/$ACTUAL_USER UserShell 2>/dev/null | awk '{print $2}')" != "$ZSH_PATH" ]]; then
-            dscl . -change /Users/$ACTUAL_USER UserShell "$(dscl . -read /Users/$ACTUAL_USER UserShell | awk '{print $2}')" "$ZSH_PATH" 2>/dev/null || \
-            dscl . -create /Users/$ACTUAL_USER UserShell "$ZSH_PATH"
+        if ! grep -qF "$ZSH_PATH" /etc/shells; then
+            echo "$ZSH_PATH" | sudo tee -a /etc/shells
         fi
+        chsh -s "$ZSH_PATH"
     else
         # On Linux, add zsh to /etc/shells if not already there
         if ! grep -q "$ZSH_PATH" /etc/shells; then
@@ -697,7 +737,6 @@ install_fonts() {
     
     case $PACKAGE_MANAGER in
         brew)
-            brew tap homebrew/cask-fonts
             brew install --cask font-meslo-lg-nerd-font
             ;;
         *)
@@ -755,8 +794,10 @@ main() {
     # Tools installation
     install_fzf
     install_zoxide
-    install_nodejs
+    install_nvm
     install_additional_tools
+    install_lazydocker
+    install_lnav
 
     # Install plugin managers
     install_tmux_plugin_manager
@@ -797,8 +838,10 @@ show_help() {
     echo "  - FZF fuzzy finder"
     echo "  - Zoxide smart cd"
     echo "  - Tmux, Vim, Neovim"
-    echo "  - Node.js and npm"
-    echo "  - Additional development tools (direnv, bat, ripgrep, etc.)"
+    echo "  - nvm (Node Version Manager)"
+    echo "  - Additional development tools (direnv, bat, ripgrep, etc.)
+  - lazydocker (Docker TUI)
+  - lnav (log file navigator)"
     echo "  - Optional: Nerd Fonts"
     echo ""
     echo "Supported systems:"

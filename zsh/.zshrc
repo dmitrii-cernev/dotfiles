@@ -99,14 +99,12 @@ set -o vi
 alias x86brew="arch -x86_64 /usr/local/bin/brew"
 alias brew="/opt/homebrew/bin/brew"
 
-# Kafdrop aliases
-alias kafdrop-prod="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=sesth01-kafka20.piercenetwork.com:9092,sesth01-kafka21.piercenetwork.com:9092,sesth01-kafka22.piercenetwork.com:9092 obsidiandynamics/kafdrop:latest"
-alias kafdrop-test="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=sesth02-kafka10.piercenetwork.com:9092,sesth02-kafka11.piercenetwork.com:9092,sesth02-kafka12.piercenetwork.com:9092 obsidiandynamics/kafdrop:latest"
-alias kafdrop-local="docker run --platform linux/amd64 --rm -p 9000:9000 -e KAFKA_BROKERCONNECT=localhost:9092 obsidiandynamics/kafdrop:latest"
 
 # Battery status
 alias battery='pmset -g batt | grep -o "[0-9]\{1,3\}%\|\d\+:\d\+"'
 alias em='emacsclient -c -n -a "emacs"'
+
+alias j='just'
 
 # ==============================================================================
 # FUNCTIONS
@@ -129,27 +127,11 @@ start_ecom() {
 }
 
 # ==============================================================================
-# EXTERNAL INTEGRATIONS
-# ==============================================================================
-
-# Fabric bootstrap
-if [ -f "/Users/dmitriicernev/.config/fabric/fabric-bootstrap.inc" ]; then 
-    . "/Users/dmitriicernev/.config/fabric/fabric-bootstrap.inc"
-fi
-
-# Google Cloud SDK
-if [ -f '/Users/dmitriicernev/google-cloud-sdk/path.zsh.inc' ]; then 
-    . '/Users/dmitriicernev/google-cloud-sdk/path.zsh.inc'
-fi
-
-if [ -f '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc' ]; then 
-    . '/Users/dmitriicernev/google-cloud-sdk/completion.zsh.inc'
-fi
-
-# ==============================================================================
 # PROMPT CONFIGURATION (OH-MY-POSH)
 # ==============================================================================
 
+autoload -Uz compinit
+compinit
 # Initialize Oh My Posh (skip for Apple Terminal)
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
     eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/catppuccin.json)"
