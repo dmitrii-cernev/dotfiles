@@ -14,8 +14,11 @@
 )
 
 (defalias
-  cap_ctrl (tap-hold 200 150 esc lctl)                    ;; Caps: tap=Esc, hold=Ctrl
-  tab_nav  (tap-hold 200 200 tab (layer-while-held nav))  ;; Tab: tap=Tab, hold=Nav
+  ;; Caps: press -> window for Ctrl; Esc only if no other key occurs within 50ms.
+  ;; params: (tap-hold-press-timeout tap_repress hold_timeout tap hold timeout_action)
+  cap_ctrl (tap-hold-press-timeout 200 50 esc lctl esc)
+
+  tab_nav  (tap-hold 200 200 tab (layer-while-held nav))
 )
 
 ;; -------- Input-chord groups --------
@@ -37,7 +40,7 @@
 )
 
 ;; Nav layer chords: single taps on j/k/l output arrows; s/d/f stay letters
-(defchords mods_nav 200
+(defchords mods_nav 150
   (f) f
   (d) d
   (s) s
