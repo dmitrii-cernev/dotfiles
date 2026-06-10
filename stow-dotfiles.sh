@@ -144,6 +144,9 @@ stow_all() {
     # kanata — only if the binary is present
     command -v kanata >/dev/null 2>&1 && packages+=(kanata)
 
+    # doom — only if Doom Emacs is installed
+    command -v doom >/dev/null 2>&1 && packages+=(doom)
+
     if [[ "$IS_MACOS" == true ]]; then
         # aerospace — only if installed
         command -v aerospace >/dev/null 2>&1 && packages+=(aerospace)
@@ -285,7 +288,7 @@ show_help() {
     echo ""
     echo "Packages stowed per platform:"
     echo "  Always:   nvim, ohmyposh, tmux, vim, zsh"
-    echo "  If found: ghostty, kanata"
+    echo "  If found: ghostty, kanata, doom"
     echo "  macOS:    aerospace (if installed)"
     echo "  Linux:    hyprland, waybar (if installed)"
     echo ""
