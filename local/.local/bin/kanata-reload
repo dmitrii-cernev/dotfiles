@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+sudo cp ~/.config/kanata/config.kbd /etc/kanata/config.kbd
+sudo systemctl restart kanata@"$USER"
+echo "kanata reloaded"
