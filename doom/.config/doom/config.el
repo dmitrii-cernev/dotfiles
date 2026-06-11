@@ -222,3 +222,10 @@
         org-journal-date-format "%A, %d %B %Y"
         org-journal-carryover-items
         "TODO=\"TODO\"|TODO=\"NEXT\"|TODO=\"IN-PROGRESS\"|TODO=\"WAITING\"|TODO=\"HOLD\"|TODO=\"PROJ\""))
+
+(use-package! reverse-im
+  :config
+  ;; Russian layout
+  (reverse-im-activate "russian-computer")
+  ;; Make it work with Evil/Doom
+  (setq reverse-im-input-methods '("russian-computer")))
