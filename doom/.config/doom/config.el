@@ -133,6 +133,14 @@
 
   (setq org-agenda-skip-function-global #'my/org-skip-seconda)
 
+  ;; In the main agenda, show only the next occurrence of repeating items
+  ;; (e.g. daily habits), instead of listing every future repeat in the span.
+  (setq org-agenda-show-future-repeats 'next)
+
+  (after! org-habit
+    ;; Keep habits on today's agenda only, not duplicated across future days.
+    (setq org-habit-show-habits-only-for-today t))
+
   ;; Override default "t" in agenda to exclude checkbox-style keywords and seconda tasks
   (setq org-agenda-custom-commands
         '(("t" "TODOs (no checkboxes)"
