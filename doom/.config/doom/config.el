@@ -115,11 +115,23 @@
               (when (and warn-start (time-less-p (current-time) warn-start))
                 end)))))))
 
-  ;; Skip entries from seconda.org (for main TODO view)
+  ;; Skip entries from seconda.org (for main views).
+  ;; WAITING entries with DEADLINE/SCHEDULED can be pulled by agenda collection,
+  ;; not only by the TODO matcher, so apply this via the global skip function too.
+  (defun my/org-in-seconda-p ()
+    "Return non-nil when the current Org agenda source buffer is seconda.org."
+    (let ((file (buffer-file-name (or (buffer-base-buffer) (current-buffer)))))
+      (and file (string= (file-name-nondirectory file) "seconda.org"))))
+
   (defun my/org-skip-seconda ()
-    "Skip entries that belong to seconda.org."
-    (when (string-suffix-p "seconda.org" (or (buffer-file-name) ""))
-      (org-end-of-subtree t)))
+    "Skip entries that belong to seconda.org, except in the dedicated seconda command."
+    (when (and (my/org-in-seconda-p)
+               (not (equal (and (boundp 'org-keys) org-keys) "2")))
+      (save-excursion
+        (or (outline-next-heading) (goto-char (point-max)))
+        (point))))
+
+  (setq org-agenda-skip-function-global #'my/org-skip-seconda)
 
   ;; Override default "t" in agenda to exclude checkbox-style keywords and seconda tasks
   (setq org-agenda-custom-commands
