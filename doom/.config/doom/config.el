@@ -80,7 +80,7 @@
 (after! org
   ;; TODO keyword states (replaces Doom defaults incl. STRT and LOOP)
   (setq org-todo-keywords
-        '((sequence "BACKLOG(b)" "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CANCELLED(c)")
+        '((sequence "TODO(t)" "BACKLOG(b)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "HOLD(h)" "PROJ(p)" "|" "DONE(d)" "CANCELLED(c)")
           (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](X)")))
   ;; TODO keyword colors with background
   (setq org-todo-keyword-faces
@@ -215,7 +215,42 @@
       "A A" #'my/org-archive-done-tasks
       "z"   #'my/org-fold-others)
 
+(defun my/org-job-capture-target ()
+  "Return position in the current quarter section in ~/org/job.org, creating it if needed."
+  (let* ((year (format-time-string "%Y"))
+         (month (string-to-number (format-time-string "%m")))
+         (quarter (1+ (/ (1- month) 3)))
+         (quarter-heading (format "%s Q%d" year quarter))
+         app-pos app-end quarter-pos)
+    (goto-char (point-min))
+    (setq app-pos (org-find-exact-headline-in-buffer "Applications"))
+    (unless app-pos
+      (goto-char (point-max))
+      (unless (bolp) (insert "\n"))
+      (insert "* Applications\n")
+      (setq app-pos (org-find-exact-headline-in-buffer "Applications")))
+    (goto-char app-pos)
+    (setq app-end (save-excursion (org-end-of-subtree t t)))
+    (setq quarter-pos
+          (save-excursion
+            (re-search-forward
+             (format "^\\*\\* +%s\\(?:[ \\t]\\|$\\)" (regexp-quote quarter-heading))
+             app-end t)))
+    (unless quarter-pos
+      (goto-char app-end)
+      (unless (bolp) (insert "\n"))
+      (insert "** " quarter-heading "\n")
+      (forward-line -1)
+      (setq quarter-pos (point)))
+    (goto-char quarter-pos)
+    (org-end-of-subtree t t)
+    (unless (bolp) (insert "\n"))
+    (point)))
+
 (after! org-capture
+  ;; Hide unused Doom project capture templates, then reuse "o" for Others.
+  (setq org-capture-templates
+        (assoc-delete-all "p" (assoc-delete-all "o" org-capture-templates)))
   (setf (alist-get "t" org-capture-templates nil nil #'equal)
         '("Personal todo" entry
           (file+headline +org-capture-todo-file "Inbox")
@@ -227,7 +262,13 @@
   (setf (alist-get "j" org-capture-templates nil nil #'equal)
         '("Journal" entry
           (file+olp+datetree +org-capture-journal-file)
-          "* %U %?\n%i" :prepend t)))
+          "* %U %?\n%i" :prepend t))
+  (setf (alist-get "o" org-capture-templates nil nil #'equal)
+        '("Others"))
+  (setf (alist-get "oj" org-capture-templates nil nil #'equal)
+        '("Job application sent" plain
+          (file+function "~/org/job.org" my/org-job-capture-target)
+          "*** %^{Job name}\n:PROPERTIES:\n:SALARY: %^{Salary|N/A}\n:LOCATION: %^{Location}\n:LINK: %^{Link}\n:SERVICE: %^{Service|LinkedIn|JustJoinIT|No Fluff Jobs|Pracuj.pl|Other}\n:STATUS: %^{Status|Sent|Interview|Offer|Rejected|Ghosted}\n:APPLIED_AT: %U\n:UPDATED_AT: %U\n:END:\n%i\n%?\n")))
 
 (after! org-superstar
   ;; Heading bullet symbols per level
