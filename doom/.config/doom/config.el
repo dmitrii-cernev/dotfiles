@@ -137,9 +137,24 @@
   ;; (e.g. daily habits), instead of listing every future repeat in the span.
   (setq org-agenda-show-future-repeats 'next)
 
-  (after! org-habit
-    ;; Keep habits on today's agenda only, not duplicated across future days.
-    (setq org-habit-show-habits-only-for-today t))
+  ;; Load org-habit early enough for it to add its agenda finalize hook;
+  ;; otherwise habits can appear without the right-side consistency graph.
+  (add-to-list 'org-modules 'org-habit)
+  (require 'org-habit)
+  (setq org-habit-show-habits t
+        org-habit-show-habits-only-for-today nil
+        ;; Put graph far enough right to keep agenda text readable.
+        org-habit-graph-column 80
+        ;; Thin/compact graph: one week history + a couple upcoming days.
+        org-habit-preceding-days 10
+        org-habit-following-days 2
+        ;; Lighter glyphs for the consistency graph.
+        org-habit-today-glyph ?┆
+        org-habit-completed-glyph ?•
+        org-habit-ready-glyph ?·
+        org-habit-alert-glyph ?!
+        org-habit-overdue-glyph ?×
+        org-habit-clear-glyph ? )
 
   ;; Override default "t" in agenda to exclude checkbox-style keywords and seconda tasks
   (setq org-agenda-custom-commands
