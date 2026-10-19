@@ -1,0 +1,361 @@
+" .ideavimrc is a configuration file for IdeaVim plugin.
+" the same commands as the original .vimrc configuration.
+" You can find a list of commands here: https://jb.gg/38r75
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+"" -- Suggested options --
+" Show a few lines of context around the cursor. Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+set scrolloff=5
+
+" Do incremental searching.
+set incsearch
+
+" Don't use Ex mode, use Q for formatting.
+map Q gq
+
+" --- Enable IdeaVim plugins https://jb.gg/ideavim-plugins
+
+" Highlight copied text
+Plug 'machakann/vim-highlightedyank'
+" Commentary plugin
+Plug 'tpope/vim-commentary'
+Plug 'justinmk/vim-sneak'
+
+"" -- Map IDE actions to IdeaVim -- https://jb.gg/abva6t
+"" Map \r to the Reformat Code action
+"map \r <Action>(ReformatCode)
+
+"" Map <leader>d to start debug
+"map <leader>d <Action>(Debug)
+
+"" Map \b to toggle the breakpoint on the current line
+"map \b <Action>(ToggleLineBreakpoint)
+
+" LazyVim-inspired IdeaVim configuration
+" ~/.ideavimrc
+" ============================================================
+
+let mapleader=" "
+let maplocalleader="\\"
+
+" ------------------------------------------------------------
+" General
+" ------------------------------------------------------------
+
+set number
+set relativenumber
+set scrolloff=4
+
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+
+set ideajoin
+set idearefactormode=keep
+set functiontextobj
+set clipboard=unnamed
+set noideamarks
+
+" ------------------------------------------------------------
+" IdeaVim extensions
+" ------------------------------------------------------------
+
+set surround
+set commentary
+set argtextobj
+set textobj-entire
+set mini-ai
+set matchit
+
+let g:argtextobj_pairs="(:),{:},[:],<:>"
+
+" Optional:
+" Install the JetBrains "Which-Key" plugin first
+"
+" set which-key
+" set notimeout
+
+" ------------------------------------------------------------
+" Basic LazyVim-ish behaviour
+" ------------------------------------------------------------
+
+" Clear search highlighted after <Esc>
+" nnoremap <Esc> :nohlsearch<CR>
+
+" Keep cursor centered when paging/searching
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+vnoremap < <gv
+vnoremap > >gv
+
+" Window navigation
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <leader>ww <C-w>w
+
+nmap <leader>wv <Action>(SplitVertically)
+nmap <leader>ws <Action>(SplitVertically)
+nmap <leader>wh <Action>(SplitHorizontally)
+nmap <leader>wo <Action>(UnsplitAll)<Action>(HideAllWindows)
+
+nmap <leader>wq <Action>(CloseEditor)
+
+nmap <leader>. <Action>(SearchEverywhere)
+
+" ============================================================
+" FILES / Find
+" ============================================================
+
+" LazyVim: <leader><space> Find FILES
+nmap <leader><space> <Action>(GotoFile)
+
+" LazyVim: <leader>/ Grep
+nmap <leader>/ <Action>(FindInPath)
+xmap <leader>sw <Action>(FindInPath)
+
+" Find files
+nmap <leader>ff <Action>(GotoFile)
+
+" Recent files
+nmap <leader>fr <Action>(RecentFiles)
+
+" Buffers / open files
+nmap <leader>fb <Action>(Switcher)
+
+" Search Everywhere
+nmap <leader>fF <Action>(SearchEverywhere)
+
+" Open this configuration
+" nnoremap <leader>fc :e ~/.ideavimrc<CR>
+
+" ============================================================
+" EXPLORER
+" ============================================================
+
+" LazyVim: <leader>e
+nmap <leader>e <Action>(ActivateProjectToolWindow)
+nmap <leader>E <Action>(ActivateProjectToolWindow)
+
+" ============================================================
+" BUFFERS / TABS
+" ============================================================
+
+" LazyVim uses Shift-H / Shift-L for buffers
+nmap <S-h> <Action>(PreviousTab)
+nmap <S-l> <Action>(NextTab)
+
+" Buffer picker
+nmap <leader>, <Action>(Switcher)
+nmap <leader>bb <Action>(Switcher)
+
+" Delete/close buffers
+nmap <leader>bd <Action>(CloseContent)
+
+" Close all except current
+nmap <leader>bo <Action>(CloseAllEditorsButActive)
+
+" Reopen closed tab
+nmap <leader>br <Action>(ReopenClosedTab)
+
+" ============================================================
+" Search
+" ============================================================
+
+" Grep project
+nmap <leader>sg <Action>(FindInPath)
+
+" Symbols
+nmap <leader>sS <Action>(GotoSymbol)
+
+" IntelliJ actions
+nmap <leader>sa <Action>(GotoAction)
+
+" Diagnostics / Problems
+nmap <leader>sd <Action>(ActivateProblemsViewToolWindow)
+
+" Replace across project
+nmap <leader>sr <Action>(ReplaceInPath)
+
+" ============================================================
+" LSP / CODE NAVIGATION
+" ============================================================
+
+" Definition
+nmap gd <Action>(GotoDeclaration)
+
+" Type declaration
+nmap gD <Action>(GotoTypeDeclaration)
+
+" Implementation
+nmap gi <Action>(GotoImplementation)
+nmap gI <Action>(GotoImplementation)
+
+" References / usages
+nmap gr <Action>(FindUsages)
+" Test
+nmap gt <Action>(GotoTest)
+" Tests
+nmap <leader>tt <Action>(RunClass)
+nmap <leader>tr <Action>(Rerun)
+nmap <leader>td <Action>(DebugClass)
+nmap <leader>tm <Action>(RunMethod)
+nmap <leader>tM <Action>(DebugMethod)
+nmap <leader>ts <Action>(Stop)
+" Debug
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>dd <Action>(DebugClass)
+nmap <leader>do <Action>(StepOut)
+nmap <leader>dO <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>dc <Action>(Resume)
+
+" Hover / documentation
+nmap K <Action>(ShowHoverInfo)
+
+" ============================================================
+" CODE
+" ============================================================
+
+" LazyVim: <leader>ca Code Action
+nmap <leader>ca <Action>(ShowIntentionActions)
+
+" LazyVim: <leader>cr Rename
+nmap <leader>cr <Action>(RenameElement)
+
+" Reformat
+nmap <leader>cf <Action>(ReformatCode)
+
+" Optimize imports
+nmap <leader>co <Action>(OptimizeImports)
+
+" Structure
+nmap <leader>cs <Action>(FileStructurePopup)
+
+" Refactor menu
+nmap <leader>cR <Action>(Refactoring.QuickListPopupAction)
+
+" Safe delete
+nmap <leader>cd <Action>(SafeDelete)
+
+" Generate code: constructor/getters/setters/etc.
+nmap <leader>cg <Action>(Generate)
+
+" ============================================================
+" Diagnostics
+" ============================================================
+
+" LazyVim style [d / ]d
+nmap ]d <Action>(GotoNextError)
+nmap [d <Action>(GotoPreviousError)
+
+" Show error under cursor
+nmap <leader>cd <Action>(ShowErrorDescription)
+nmap <C-w>d <Action>(ShowErrorDescription)
+
+" Problems window
+nmap <leader>xx <Action>(ActivateProblemsViewToolWindow)
+
+" ============================================================
+" GIT
+" ============================================================
+
+" LazyVim <leader>gs = git status-ish
+nmap <leader>gg <Action>(ActivateVersionControlToolWindow)
+
+" Git branches
+nmap <leader>gb <Action>(Git.Branches)
+
+" Git blame
+nmap <leader>gB <Action>(Annotate)
+
+" File history
+nmap <leader>gh <Action>(Vcs.ShowTabbedFileHistory)
+
+" Commit
+nmap <leader>gc <Action>(CheckinProject)
+
+nmap <leader>gn <Action>(Git.CreateNewBranch)
+nmap <leader>gp <Action>(Vcs.Push)
+nmap <leader>gP <Action>(Vcs.UpdateProject)
+nmap <leader>gm <Action>(Vcs.Merge)
+
+" Next / previous changed block
+nmap ]h <Action>(VcsShowNextChangeMarker)<Action>(NextDiff)
+nmap [h <Action>(VcsShowPrevChangeMarker)<Action>(PreviousDiff)
+nmap ]H <Action>(Diff.NextChange)
+nmap [H <Action>(Diff.PrevChange)
+
+" ============================================================
+" TOOL WINDOWS
+" ============================================================
+
+" Terminal
+nmap <leader>ft <Action>(ActivateTerminalToolWindow)
+nmap <C-/> <Action>(ActivateTerminalToolWindow)
+
+" CheckinProject
+nmap <leader>fp <Action>(ActivateProjectToolWindow)
+
+" Version control
+nmap <leader>fg <Action>(ActivateVersionControlToolWindow)
+
+" Create new file
+nmap <leader>fn <Action>(CreateNewFile)
+
+" ============================================================
+" INTELLIJ NAVIGATION
+" ============================================================
+
+nmap <C-o> <Action>(Back)
+nmap <C-i> <Action>(Forward)
+
+" Previous / next method
+nmap [m <Action>(MethodUp)
+nmap ]m <Action>(MethodDown)
+nmap [f <Action>(MethodUp)
+nmap ]f <Action>(MethodDown)
+
+" Previous / next class
+nmap [c <Action>(ClassUp)
+
+" ============================================================ " IdeaVim" ========
+
+" Reload ~/.ideavimrc
+nmap <leader>vr <Action>(IdeaVim.ReloadVimRc.reload)
+nmap <leader>hrr <Action>(IdeaVim.ReloadVimRc.reload)
+
+" My customs
+nnoremap vag ggvG$
+nnoremap vv V
+nnoremap <Esc> :nohlsearch<CR><Esc>
+nmap <leader>uit <Action>(VimFindActionIdAction)
+nmap <leader>Sc <Action>(Scala.Sbt.RunTask)
+nmap <leader>St <Action>(Scala.sbt.test)
+nmap <leader>Sa <Action>(ExternalSystem.RefreshAllProjects)
+nmap <leader>Sr <Action>(ExternalSystem.ProjectRefreshAction)
+nmap <leader>SS <Action>(ActivatesbtToolWindow)
+
+nmap <leader>ss <Action>(FileStructurePopup)
+
+nmap <leader>xt <Action>(ActivateTODOtoolWindow)
+nmap <leader>xm <Action>(ActivateProblemsViewToolWindow)
+
+nmap <leader>rr <Action>(Run)
+nmap <leader>rm <Action>(RunMenu)
+
+nmap ]n <Action>(NextOccurrence)
+nmap [n <Action>(PreviousOccurrence)
+
+nnoremap ]<Space> o<Esc>k
+nnoremap [<Space> O<Esc>j
+
+nmap <leader>aa <Action>(copilot.chat.show)
+
+
