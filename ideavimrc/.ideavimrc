@@ -282,8 +282,8 @@ nmap <leader>gh <Action>(Vcs.ShowTabbedFileHistory)
 nmap <leader>gc <Action>(CheckinProject)
 
 nmap <leader>gn <Action>(Git.CreateNewBranch)
-nmap <leader>gp <Action>(Vcs.Push)
-nmap <leader>gP <Action>(Vcs.UpdateProject)
+nmap <leader>gP <Action>(Vcs.Push)
+nmap <leader>gp <Action>(Vcs.UpdateProject)
 nmap <leader>gm <Action>(Vcs.Merge)
 
 " Next / previous changed block
