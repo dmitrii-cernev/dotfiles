@@ -54,7 +54,7 @@ set smartcase
 
 set ideajoin
 set idearefactormode=keep
-set functiontextobj
+set functextobj
 set clipboard=unnamed
 set noideamarks
 
