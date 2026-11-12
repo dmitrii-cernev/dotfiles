@@ -4,10 +4,16 @@
   process-unmapped-keys yes
   concurrent-tap-hold yes
   linux-dev-names-exclude (
+    "ZMK Project temper Keyboard"
+    "temper Keyboard"
     "Squalius-cephalus silakka54"
     "Squalius-cephalus silakka54 Keyboard"
     "Squalius-cephalus silakka54 Consumer Control"
     "Squalius-cephalus silakka54 System Control"
+    "DPB Ferris sweep"
+    "DPB Ferris sweep Mouse"
+    "DPB Ferris sweep Consumer Control"
+    "DPB Ferris sweep System Control"
   )
 )
 

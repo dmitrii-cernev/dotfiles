@@ -1,0 +1,52 @@
+;; kanata.kbd — minimal config per spec
+
+(defcfg
+  process-unmapped-keys yes
+  concurrent-tap-hold yes
+  linux-dev-names-exclude (
+    "Squalius-cephalus silakka54"
+    "Squalius-cephalus silakka54 Keyboard"
+    "Squalius-cephalus silakka54 Consumer Control"
+    "Squalius-cephalus silakka54 System Control"
+    "DPB Ferris sweep"
+    "DPB Ferris sweep Mouse"
+    "DPB Ferris sweep Consumer Control"
+    "DPB Ferris sweep System Control"
+  )
+)
+
+(defsrc
+  esc  grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  tab  q   w  e r t y u i o p [ ] \
+  caps a   s  d f g h j k l ; ' ret
+  lsft z   x  c v b n m , . / rsft
+  lctl lmet lalt       spc        ralt rmet rctl
+)
+
+(defalias
+  cap_ctrl (tap-hold 200 200 esc lctl)                    ;; Caps: tap=Esc, hold=Ctrl
+  tab_nav  (tap-hold 200 200 tab (layer-while-held nav))  ;; Tab: tap=Tab, hold=Nav
+)
+
+;; -------- Layers --------
+(deflayer base
+  caps grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  @tab_nav q w e r t y u i o p [ ] \
+  @cap_ctrl a s d f g h j k l ; ' ret
+  lsft z x c v b n m , . / rsft
+  lctl lalt lmet            spc           ralt rmet rctl   ;; swap lmet<->lalt
+)
+
+(deflayer nav
+  caps grv  1 2 3 4 5 6 7 8 9 0 - = bspc
+  @tab_nav q w e r t y u i o p [ ] \
+  @cap_ctrl a s d f g left down up rght ; ' ret            ;; hjkl as arrows
+  lsft z x c v b n m , . / rsft
+  lctl lalt lmet            spc           ralt rmet rctl
+)
+
+;; -------- Remaps outside layers --------
+;; esc becomes CapsLock (physical Esc sends Caps)
+(deflayermap (global)
+  esc caps
+)

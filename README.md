@@ -1,3 +1,5 @@
+VS Code Vim configuration (ported from IdeaVim): [setup and mappings](vscode/README.md).
+
 To setup on new environemnt:
 1. Make script executable:
 ```

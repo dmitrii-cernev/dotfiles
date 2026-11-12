@@ -167,7 +167,42 @@
           ("2" "Seconda project"
            todo "TODO|NEXT|IN-PROGRESS|WAITING|HOLD|PROJ"
            ((org-agenda-files '("~/org/seconda.org"))
-            (org-agenda-overriding-header "Seconda tasks"))))))
+            (org-agenda-overriding-header "Seconda tasks")))
+          ("r" "RE Partners dashboard"
+           ((agenda ""
+                    ((org-agenda-span 7)
+                     (org-agenda-start-on-weekday nil)
+                     (org-agenda-overriding-header "RE Partners — next 7 days")))
+            (todo "TODO|NEXT|IN-PROGRESS|WAITING|HOLD|PROJ"
+                  ((org-agenda-overriding-header "RE Partners — unfinished tasks"))))
+           ((org-agenda-files '("~/org/re.org"))))))
+
+  (defun my/org-journal-time-heading-p ()
+    "Return non-nil if the current Org heading starts with an HH:MM timestamp."
+    (save-excursion
+      (when (ignore-errors (org-back-to-heading t) t)
+        (string-match-p
+         "\\`[0-2]?[0-9]:[0-5][0-9]\\(?:\\_>\\|[[:space:][:punct:]]\\)"
+         (org-get-heading t t t t)))))
+
+  (defun my/org-insert-journal-time-heading-or-default (&optional arg)
+    "On journal time headings, insert a same-level heading with the current time.
+Otherwise fall back to `org-insert-heading-respect-content'."
+    (interactive "P")
+    (if (my/org-journal-time-heading-p)
+        (let ((level (save-excursion
+                       (org-back-to-heading t)
+                       (org-current-level))))
+          (org-back-to-heading t)
+          (org-end-of-subtree t t)
+          (unless (bolp) (insert "\n"))
+          (insert (make-string level ?*) " " (format-time-string "%H:%M") " "))
+      (org-insert-heading-respect-content arg)))
+
+  ;; `C-<return>' can arrive as different events depending on terminal/GUI, so
+  ;; bind both forms directly in `org-mode-map'.
+  (define-key org-mode-map (kbd "C-<return>") #'my/org-insert-journal-time-heading-or-default)
+  (define-key org-mode-map [C-return] #'my/org-insert-journal-time-heading-or-default))
 
 (map! :leader
       :desc "Open neotree" "e" #'+neotree/open)
@@ -230,6 +265,10 @@
       "A A" #'my/org-archive-done-tasks
       "z"   #'my/org-fold-others)
 
+(after! evil-org
+  (define-key evil-org-mode-map (kbd "C-<return>") #'my/org-insert-journal-time-heading-or-default)
+  (define-key evil-org-mode-map [C-return] #'my/org-insert-journal-time-heading-or-default))
+
 (defun my/org-job-capture-target ()
   "Return position in the current quarter section in ~/org/job.org, creating it if needed."
   (let* ((year (format-time-string "%Y"))
@@ -283,7 +322,25 @@
   (setf (alist-get "oj" org-capture-templates nil nil #'equal)
         '("Job application sent" plain
           (file+function "~/org/job.org" my/org-job-capture-target)
-          "*** %^{Job name}\n:PROPERTIES:\n:SALARY: %^{Salary|N/A}\n:LOCATION: %^{Location}\n:LINK: %^{Link}\n:SERVICE: %^{Service|LinkedIn|JustJoinIT|No Fluff Jobs|Pracuj.pl|Other}\n:STATUS: %^{Status|Sent|Interview|Offer|Rejected|Ghosted}\n:APPLIED_AT: %U\n:UPDATED_AT: %U\n:END:\n%i\n%?\n")))
+          "*** %^{Job name}\n:PROPERTIES:\n:SALARY: %^{Salary|N/A}\n:LOCATION: %^{Location}\n:LINK: %^{Link}\n:SERVICE: %^{Service|LinkedIn|JustJoinIT|No Fluff Jobs|Pracuj.pl|Other}\n:STATUS: %^{Status|Sent|Interview|Offer|Rejected|Ghosted}\n:APPLIED_AT: %U\n:UPDATED_AT: %U\n:END:\n%i\n%?\n"))
+  (setf (alist-get "r" org-capture-templates nil nil #'equal)
+        '("RE Partners"))
+  (setf (alist-get "rt" org-capture-templates nil nil #'equal)
+        '("RE Partners todo" entry
+          (file+headline "~/org/re.org" "Todos")
+          "* TODO %^{Task}\n:PROPERTIES:\n:CREATED: %U\n:END:\n%?\n%i" :prepend t))
+  (setf (alist-get "rm" org-capture-templates nil nil #'equal)
+        '("RE Partners meeting" entry
+          (file+headline "~/org/re.org" "Meetings")
+          "* %U %^{Meeting title}\n%^{Description}\n** Action points\n*** TODO %?" :prepend t))
+  (setf (alist-get "rn" org-capture-templates nil nil #'equal)
+        '("RE Partners note" entry
+          (file+headline "~/org/re.org" "Notes")
+          "* %U %^{Title}\n%?\n%i" :prepend t))
+  (setf (alist-get "rp" org-capture-templates nil nil #'equal)
+        '("RE Partners point for next meeting" entry
+          (file+olp "~/org/re.org" "Meetings" "Points for next meeting")
+          "*** TODO %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n%i" :prepend t)))
 
 (after! org-superstar
   ;; Heading bullet symbols per level

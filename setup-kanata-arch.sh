@@ -130,7 +130,30 @@ NoNewPrivileges=yes
 WantedBy=multi-user.target
 UNIT
 
+# Kanata can remain alive while its Linux device watcher misses a Bluetooth
+# keyboard reconnect. Restart it for each new MX Keys Mini input device so it
+# always performs a fresh device scan.
+echo "Installing MX Keys Mini reconnect recovery…"
+
+sudo tee /etc/systemd/system/kanata-reconnect@.service >/dev/null <<'UNIT'
+[Unit]
+Description=Restart Kanata after keyboard reconnect for %i
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --no-block restart kanata@%i.service
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+UNIT
+
+sudo tee /etc/udev/rules.d/99-kanata-reconnect.rules >/dev/null <<RULES
+ACTION=="add", SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="MX Keys Mini", TAG+="systemd", ENV{SYSTEMD_WANTS}+="kanata-reconnect@${TARGET_USER}.service"
+RULES
+
 sudo systemctl daemon-reload
+sudo udevadm control --reload
 sudo systemctl enable --now "kanata@${TARGET_USER}.service"
 
 #---------------------------#

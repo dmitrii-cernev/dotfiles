@@ -7,11 +7,11 @@
  '(custom-safe-themes
    '("4594d6b9753691142f02e67b8eb0fda7d12f6cc9f1299a49b819312d6addad1d" default))
  '(org-agenda-files
-   '("~/org/job.org" "/home/cernev/org/habits.org" "/home/cernev/org/projects.org"
-     "/home/cernev/org/someday.org" "/home/cernev/org/org.org"
-     "/home/cernev/org/archive.org" "/home/cernev/org/journal.org"
-     "/home/cernev/org/notes.org" "/home/cernev/org/seconda.org"
-     "/home/cernev/org/todo.org")))
+   '("~/org/agenda.org" "/home/cernev/org/job.org" "/home/cernev/org/habits.org"
+     "/home/cernev/org/projects.org" "/home/cernev/org/someday.org"
+     "/home/cernev/org/org.org" "/home/cernev/org/archive.org"
+     "/home/cernev/org/journal.org" "/home/cernev/org/notes.org"
+     "/home/cernev/org/seconda.org" "/home/cernev/org/todo.org")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
